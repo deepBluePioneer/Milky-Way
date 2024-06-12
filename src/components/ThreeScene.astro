@@ -1,0 +1,21 @@
+---
+import { initScene } from '../scripts/threeScene';
+---
+
+<div id="three-scene" style="width: 100%; height: 100vh;" client:load></div>
+
+<script>
+  import { initScene } from '../scripts/threeScene';
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('load', () => {
+      initScene();
+    });
+
+    // Ensure the scene is reinitialized when navigating back to this component
+    document.addEventListener('astro:after-swap', () => {
+      initScene();
+    });
+  }
+</script>
+
