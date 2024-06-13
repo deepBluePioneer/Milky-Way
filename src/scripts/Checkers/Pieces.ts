@@ -46,28 +46,17 @@ export class Pieces {
     const pieceMaterial = new THREE.MeshLambertMaterial({ color: piece === 'b' ? 'black' : 'red' });
     const pieceMesh = new THREE.Mesh(pieceGeometry, pieceMaterial);
     pieceMesh.position.set(col, 0.2, row);
+    pieceMesh.userData = {
+      originalColor: pieceMaterial.color.getHex(),
+      owner: piece === 'b' ? 'opponent' : 'player' // Tag the owner
+    };
+    console.log("Adding piece with userData:", pieceMesh.userData);
     this.scene.add(pieceMesh);
 
     this.pieceMeshes[row][col] = pieceMesh;
   }
 
-  public getPieces() {
-    return this.pieces;
-  }
-
   public getPieceMeshes() {
     return this.pieceMeshes;
-  }
-
-  public movePiece(fromRow: number, fromCol: number, toRow: number, toCol: number) {
-    if (this.pieces[toRow][toCol] === null && (fromRow + fromCol) % 2 === 1 && (toRow + toCol) % 2 === 1) {
-      this.pieces[toRow][toCol] = this.pieces[fromRow][fromCol];
-      this.pieces[fromRow][fromCol] = null;
-      this.pieceMeshes[toRow][toCol] = this.pieceMeshes[fromRow][fromCol];
-      this.pieceMeshes[fromRow][fromCol] = null;
-      if (this.pieceMeshes[toRow][toCol]) {
-        this.pieceMeshes[toRow][toCol].position.set(toCol, 0.2, toRow);
-      }
-    }
   }
 }

@@ -1,16 +1,18 @@
 import * as THREE from 'three';
-import { Board } from './Checkers/Board';
-import { Pieces } from './Checkers/Pieces';
+import { GameBoard } from './Checkers/GameBoard';
 import { Camera } from './Checkers/Camera';
+import { PieceSelector } from './Checkers/PieceSelector';
+import { PieceMover } from './Checkers/PieceMover';
 
 let renderer: THREE.WebGLRenderer | null = null;
 let camera: Camera | null = null;
 let scene: THREE.Scene | null = null;
-let pieces: Pieces | null = null;
+let board: GameBoard | null = null;
+let pieceSelector: PieceSelector | null = null;
+let pieceMover: PieceMover | null = null;
 
 const boardSize = 8;
 const squareSize = 1;
-let selectedPiece: { row: number, col: number } | null = null;
 let cameraHeight = 10; // Variable to adjust camera height
 
 export function initScene1() {
@@ -41,8 +43,10 @@ export function initScene1() {
   light.position.set(5, 10, 7).normalize();
   scene.add(light);
 
-  new Board(scene, boardSize, squareSize);
-  pieces = new Pieces(scene, boardSize, squareSize);
+  board = new GameBoard(scene, boardSize, squareSize);
+
+  pieceSelector = new PieceSelector(scene, camera.getCamera(), renderer, board, squareSize);
+  pieceMover = new PieceMover(scene, camera.getCamera(), renderer, board, pieceSelector);
 
   function animate() {
     requestAnimationFrame(animate);
@@ -53,8 +57,6 @@ export function initScene1() {
 
   // Handle window resize
   window.addEventListener('resize', onWindowResize);
-  // Add click event listener for piece movement
-  window.addEventListener('click', onWindowClick);
 }
 
 function onWindowResize() {
@@ -67,38 +69,5 @@ function onWindowResize() {
     renderer.setSize(size, size);
     container.style.width = `${size}px`;
     container.style.height = `${size}px`;
-  }
-}
-
-function onWindowClick(event: MouseEvent) {
-  if (!camera || !renderer || !scene || !pieces) return;
-
-  const container = document.getElementById('three-scene');
-  if (!container) return;
-
-  const rect = container.getBoundingClientRect();
-  const mouse = new THREE.Vector2(
-    ((event.clientX - rect.left) / rect.width) * 2 - 1,
-    -((event.clientY - rect.top) / rect.height) * 2 + 1
-  );
-
-  const raycaster = new THREE.Raycaster();
-  raycaster.setFromCamera(mouse, camera.getCamera());
-  const intersects = raycaster.intersectObjects(scene.children);
-
-  if (intersects.length > 0) {
-    const intersect = intersects[0];
-    const point = intersect.point;
-    const col = Math.floor(point.x + 0.5);
-    const row = Math.floor(point.z + 0.5);
-
-    if (selectedPiece) {
-      // Move piece to new position
-      pieces.movePiece(selectedPiece.row, selectedPiece.col, row, col);
-      selectedPiece = null;
-    } else if (pieces.getPieces()[row][col]) {
-      // Select piece
-      selectedPiece = { row, col };
-    }
   }
 }
