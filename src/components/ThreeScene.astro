@@ -1,21 +1,65 @@
----
-import { initScene } from '../scripts/threeScene';
----
-
 <div id="three-scene" style="width: 100%; height: 100vh;" client:load></div>
 
 <script>
-  import { initScene } from '../scripts/threeScene';
+  import { initScene1 } from '../scripts/threeScene1';
+  import { initScene2 } from '../scripts/threeScene2';
+  import { initScene3 } from '../scripts/threeScene3';
+
+
 
   if (typeof window !== 'undefined') {
     window.addEventListener('load', () => {
-      initScene();
+      const projectNumber = extractProjectNumber(window.location.href);
+      LoadScene(projectNumber);
+      logIdentifiableInfo(projectNumber);
     });
 
     // Ensure the scene is reinitialized when navigating back to this component
     document.addEventListener('astro:after-swap', () => {
-      initScene();
+      const projectNumber = extractProjectNumber(window.location.href);
+      LoadScene(projectNumber);
     });
   }
-</script>
 
+  function logIdentifiableInfo(projectNumber) {
+    const userAgent = navigator.userAgent;
+    const screenResolution = `${window.screen.width}x${window.screen.height}`;
+    const pageURL = window.location.href;
+
+    console.log('User Agent:', userAgent);
+    console.log('Screen Resolution:', screenResolution);
+    console.log('Page URL:', pageURL);
+    console.log('Project Number:', projectNumber);
+  }
+
+  function extractProjectNumber(url) {
+    const match = url.match(/\/projects\/project-(\d+)\//);
+    return match ? match[1] : 'Unknown';
+  }
+
+  function LoadScene(projectNumber) {
+    switch (projectNumber) {
+      case '1':
+        console.log('Initializing scene 1');
+        initScene1()
+        // Add your scene 1 initialization code here
+        break;
+      case '2':
+        console.log('Initializing scene 2');
+        initScene2()
+
+        // Add your scene 2 initialization code here
+        break;
+      case '3':
+        console.log('Initializing scene 3');
+        initScene3()
+
+        // Add your scene 3 initialization code here
+        break;
+      default:
+        console.log('Unknown project number, initializing default scene');
+        // Add your default scene initialization code here
+        break;
+    }
+  }
+</script>

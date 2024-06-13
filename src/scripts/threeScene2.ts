@@ -3,7 +3,7 @@ import * as THREE from 'three';
 let renderer: THREE.WebGLRenderer | null = null;
 let camera: THREE.PerspectiveCamera | null = null;
 
-export function initScene() {
+export function initScene2() {
   if (typeof window === 'undefined') return;
 
   if (renderer) {
